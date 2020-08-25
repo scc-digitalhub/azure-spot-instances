@@ -1,0 +1,22 @@
+global:
+ resolve_timeout: 1m
+
+route:
+  receiver: 'slack'
+
+receivers:
+- name: 'default'
+- name: 'slack'
+  slack_configs:
+    - api_url: '{{ slack_webhook_url }}' # <--- R\EPLACE THIS WITH YOUR SLACK WEBHOOK
+      send_resolved: true
+      channel: '#channel' # <--- REPLACE THIS WITH YOUR SLACK CHANNEL
+      title: '[{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] Monitoring Event Notification'
+      text: |-
+        {{ range .Alerts }}
+          *Alert:* {{ .Labels.alertname }} - `{{ .Labels.severity }}`
+          *Description:* {{ .Annotations.description }}
+          *Details:*
+          {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
+          {{ end }}
+        {{ end }}

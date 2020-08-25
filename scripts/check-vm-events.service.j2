@@ -1,0 +1,13 @@
+[Unit]
+Description=Check Vm Events
+After=network.target
+
+[Service]
+User=mobs
+Environment="SLACK_API_TOKEN={{ slack_api_token }}"
+WorkingDirectory=/home/mobs/vm-monitoring
+ExecStart=/usr/bin/python3 check-vm-events.py
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

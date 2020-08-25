@@ -1,0 +1,107 @@
+---
+- hosts: all
+  become: true
+
+  vars:
+    pip_package: python3-pip
+    pip_executable: pip3
+    pip_install_packages:
+      - docker
+      - slackclient
+      - docker-compose
+    vm_monitoring_folder: "/home/{{ ansible_user }}/monitor-vm-events/"
+
+  pre_tasks:
+    - name: Update apt-get repo and cache
+      apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
+    - name: Upgrade all apt packages
+      apt: upgrade=dist force_apt_get=yes
+
+  roles:
+    - geerlingguy.pip
+    - geerlingguy.docker
+    - nvidia.nvidia_driver
+    - nvidia.nvidia_docker
+
+  tasks:
+    - name: Ensure monitor-vm folder exists.
+      file: "path={{ vm_monitoring_folder }} state=directory"
+
+    - name: Copy VM event's monitoring script.
+      copy:
+        src: ../scripts/check-vm-events.py
+        dest: "{{ vm_monitoring_folder }}"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: 0644
+
+    - name: Copy VM event's monitoring script.
+      template:
+        src: ../scripts/check-vm-events.service.j2
+        dest: /etc/systemd/system/check-vm-events.service
+        force: yes
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: just force systemd to reread configs (2.4 and above)
+      systemd:
+        daemon_reload: yes
+
+    - name: enable service check-vm-events and ensure it is not masked
+      systemd:
+        name: check-vm-events
+        enabled: yes
+        masked: no
+
+    - name: Make sure a service is running
+      systemd:
+        state: started
+        name: check-vm-events
+
+    - name: adding existing user '{{ ansible_user }}' to group sudo
+      user:
+        name: '{{ ansible_user }}'
+        groups: docker
+        append: yes
+
+    - name: restart docker deamon
+      service:
+        name: docker
+        state: restarted
+
+    - name: Copy docker-compose file monitoring.
+      copy:
+        src: ../docker
+        dest: "{{ vm_monitoring_folder }}"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: 0644
+
+    - name: start monitoring system
+      docker_compose:
+        project_src: "{{ vm_monitoring_folder }}/docker"
+
+    - name: start gpu metrics exporter
+      command: docker run -d --gpus all --network docker_monitor-net --name nvidia-dcgm-exporter --restart unless-stopped -p 9400:9400 nvidia/dcgm-exporter:latest
+
+    - name: Create a new primary partition
+      parted:
+        device: /dev/sdc
+        number: 1
+        state: present
+
+    - name: Makes file system on block device
+      filesystem:
+        fstype: ext4
+        dev: /dev/sdc1
+
+    - name: Create mount point
+      file: path=/datadrive state=directory
+
+    - name: Mount disk
+      mount:
+        path: /datadrive
+        src: /dev/sdc1
+        fstype: ext4
+        state: mounted
