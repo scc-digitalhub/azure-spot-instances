@@ -17,23 +17,30 @@ scrape_configs:
     scrape_interval: 5s
     static_configs:
       - targets: ['nodeexporter:9100']
+        labels:
+          nodename: '{{ ansible_facts['nodename'] }}'
 
   - job_name: 'cadvisor'
     scrape_interval: 5s
     static_configs:
       - targets: ['cadvisor:8080']
+        labels:
+          nodename: '{{ ansible_facts['nodename'] }}'
 
   - job_name: 'prometheus'
     scrape_interval: 10s
     static_configs:
       - targets: ['localhost:9090']
+        labels:
+          nodename: '{{ ansible_facts['nodename'] }}'
 
   - job_name: 'nvidia-dcgm-exporter'
     scrape_interval: 10s
     honor_labels: true
     static_configs:
       - targets: ['nvidia-dcgm-exporter:9400']
-
+        labels:
+          nodename: '{{ ansible_facts['nodename'] }}'
 
 alerting:
   alertmanagers:

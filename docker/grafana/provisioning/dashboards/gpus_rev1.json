@@ -70,7 +70,7 @@
       "targets": [
         {
           "expr": "DCGM_FI_DEV_GPU_TEMP",
-          "instant": true,
+          "instant": false,
           "interval": "",
           "legendFormat": "GPU {{gpu}}",
           "refId": "A"

@@ -78,6 +78,33 @@
         group: "{{ ansible_user }}"
         mode: 0644
 
+    - name: Copy alertmanager config file.
+      template:
+        src: ../docker/alertmanager/config.yml.j2
+        dest: "{{ vm_monitoring_folder }}/docker/alertmanager/config.yml"
+        force: yes
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: 0644
+
+    - name: Copy node-exporter config file.
+      template:
+        src: ../docker/node-exporter/node-meta.prom.j2
+        dest: "{{ vm_monitoring_folder }}/docker/node-exporter/node-meta.prom"
+        force: yes
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: 0644
+
+    - name: Copy prometheus config file.
+      template:
+        src: ../docker/prometheus/prometheus.yml.j2
+        dest: "{{ vm_monitoring_folder }}/docker/prometheus/prometheus.yml"
+        force: yes
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: 0644
+
     - name: start monitoring system
       docker_compose:
         project_src: "{{ vm_monitoring_folder }}/docker"

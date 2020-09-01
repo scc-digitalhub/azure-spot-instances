@@ -37,7 +37,7 @@ if __name__ == '__main__':
         print ("OOps: Something Else",err)
     inst_metadata = json.loads(inst_r.text)
     vm_name = inst_metadata['compute']['name']
-    send_message_slack(f"VM {vm_name} Started")
+    send_message_slack(f"VM {vm_name} is Ready")
     while True:
         r = requests.get(event_url, headers=headers)
         events = json.loads(r.text)

@@ -8,9 +8,10 @@ receivers:
 - name: 'default'
 - name: 'slack'
   slack_configs:
-    - api_url: '{{ slack_webhook_url }}' # <--- R\EPLACE THIS WITH YOUR SLACK WEBHOOK
+    - api_url: '{{ slack_api_url }}' # <--- REPLACE THIS WITH YOUR SLACK WEBHOOK
       send_resolved: true
-      channel: '#channel' # <--- REPLACE THIS WITH YOUR SLACK CHANNEL
+      channel: '#{{ slack_channel }}' # <--- REPLACE THIS WITH YOUR SLACK CHANNEL
+{% raw %}
       title: '[{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] Monitoring Event Notification'
       text: |-
         {{ range .Alerts }}
@@ -20,3 +21,4 @@ receivers:
           {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
           {{ end }}
         {{ end }}
+{% endraw %}

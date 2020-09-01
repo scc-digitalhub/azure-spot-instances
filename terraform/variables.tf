@@ -58,3 +58,7 @@ variable "slack_api_token"{
 variable "slack_webhook_url" {
 
 }
+
+variable "slack_channel" {
+
+}
