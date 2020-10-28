@@ -5,11 +5,13 @@ A Spot VM offers no high availability guarantees. At any point in time when Azur
 
 To efficiently handle this problem, the checkpointing schemes are recommended. The checkpointing saves the execution status of tasks if a certain condition is met and then recovers the task status from the last saved point upon a failure.
 
+**Use second hard drive mounted at /datadrive to store your data.**
+
 In this project we provide:
 1. Manifest to create VMs using Terraform.
 2. Manifest to configure VMs using Ansible.
 3. Monitoring system capable of reporting the status of the VM through a slack channel.
-4. Script that tries to restart the machine once every hour if it has been deallocated by azure.
+4. Script that tries to restart the machine once every hour if it has been deallocated by azure and restart tag value is set to **true**.
 
 ### Create VM using Terraform and Ansible
 
@@ -51,6 +53,19 @@ TO DO
   <img src="images/change_tag_to_false.png" />
 </p>
 
+#### Resize Spot VM
+
+1. Select the Stop button on the overview page for your virtual machine.
+<p align="center">
+  <img src="images/stop_vm.png" />
+</p>
+
+2. From the menu on the left side, select Size, select appropriate VM size from the list and click on resize button.
+
+<p align="center">
+  <img src="images/resize.png" />
+</p>
+
 #### Slack Channel Notifications
 
 *  User ffais@example.com requested to start **VMGPUSPOTTEST** virtual machine.
@@ -68,4 +83,3 @@ TO DO
 * The VM gets evicted. You get a 30s notification before actual eviction.
 
   `VM VMGPUSPOTTEST will be evicted in 30s`
-  

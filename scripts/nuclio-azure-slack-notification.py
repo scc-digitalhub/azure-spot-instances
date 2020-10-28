@@ -4,11 +4,11 @@ import os
 from slack import WebClient
 from slack.errors import SlackApiError
 
-def send_message_slack(msg):
+def send_message_slack(msg, ch):
     client = WebClient(token=os.environ['SLACK_API_TOKEN'])
     try:
         response = client.chat_postMessage(
-            channel='#spotvm',
+            channel=ch,
             text=msg)
     except SlackApiError as e:
         # You will get a SlackApiError if "ok" is False
@@ -44,7 +44,12 @@ def handler(context, event):
         vm_name = re.search('virtualMachines/(.*)', body['data']['context']['activityLog']['resourceId']).group(1)
         print (vm_name)
         if body['data']['context']['activityLog']['status'] == "Accepted":
-            send_message_slack(f"VM {vm_name} was {operation_type} by {user_mail}")
+            if body['data']['context']['activityLog']['resourceGroupName'] == "MobS":
+                send_message_slack(f"VM {vm_name} was {operation_type} by {user_mail}", "#spotvm")
+            elif body['data']['context']['activityLog']['resourceGroupName'] == "DH":
+                send_message_slack(f"VM {vm_name} was {operation_type} by {user_mail}", "#dhspotvm")
+            elif body['data']['context']['activityLog']['resourceGroupName'] == "NPL":
+                send_message_slack(f"VM {vm_name} was {operation_type} by {user_mail}", "#nplspotvm")
     else:
         context.logger.info("error not supported")
         return context.Response(body='Error not supported',

@@ -18,10 +18,12 @@
       apt: upgrade=dist force_apt_get=yes
 
   roles:
-    - geerlingguy.pip
-    - geerlingguy.docker
-    - nvidia.nvidia_driver
-    - nvidia.nvidia_docker
+    - role: geerlingguy.pip
+    - role: geerlingguy.docker
+    - role: nvidia.nvidia_driver
+      when: gpu|bool
+    - role: nvidia.nvidia_docker
+      when: gpu|bool
 
   tasks:
     - name: Ensure monitor-vm folder exists.
@@ -111,6 +113,7 @@
 
     - name: start gpu metrics exporter
       command: docker run -d --gpus all --network docker_monitor-net --name nvidia-dcgm-exporter --restart unless-stopped -p 9400:9400 nvidia/dcgm-exporter:latest
+      when: gpu|bool
 
     - name: Create a new primary partition
       parted:

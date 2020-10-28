@@ -3,8 +3,9 @@ Description=Check Vm Events
 After=network.target
 
 [Service]
-User=mobs
+User={{ ansible_user }}
 Environment="SLACK_API_TOKEN={{ slack_api_token }}"
+Environment="SLACK_CHANNEL={{ slack_channel }}"
 WorkingDirectory=/home/{{ ansible_user }}/monitor-vm-events
 ExecStart=/usr/bin/python3 check-vm-events.py
 Restart=on-failure

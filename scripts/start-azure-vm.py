@@ -155,7 +155,7 @@ for group in groups:
     for vm in vms:
         vm_detail = compute_client.virtual_machines.get(group.name, vm.name, expand='instanceView')
         if vm_detail.instance_view.statuses[1].code == 'PowerState/deallocated' and vm_detail.tags['restart'] == 'true':
-            msg = 'Starting VM %s' % vm_name
+            msg = 'Starting VM %s' % vm.name
             print msg
             print apikey
             print ch

@@ -4,7 +4,7 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "rs" {
-  name     = var.prefix
+  name     = var.resource_group_name
   location = var.location
   tags      = var.tags
 }
@@ -105,7 +105,7 @@ resource "azurerm_virtual_machine_data_disk_attachment" "external" {
     echo "[vm:vars]" | tee -a vm.ini;
     echo "ansible_python_interpreter=/usr/bin/python3" | tee -a vm.ini;
     export ANSIBLE_HOST_KEY_CHECKING=False;
-    ansible-playbook -u ${var.username} --private-key ${var.ssh_private_key} --extra-vars "slack_api_url=${var.slack_webhook_url} slack_api_token=${var.slack_api_token} slack_channel=${var.slack_channel}" -i vm.ini ../ansible/install_env.yaml
+    ansible-playbook -u ${var.username} --private-key ${var.ssh_private_key} --extra-vars "slack_api_url=${var.slack_webhook_url} slack_api_token=${var.slack_api_token} slack_channel=${var.slack_channel} gpu=${var.gpu}" -i vm.ini ../ansible/install_env.yaml
     EOT
   }
 }

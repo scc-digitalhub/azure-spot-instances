@@ -2,6 +2,10 @@ variable "prefix" {
   description = "The Prefix used for all resources in this example"
 }
 
+variable "resource_group_name" {
+  description = "Resource group name"
+}
+
 variable "location" {
   description = "The Azure Region in which the resources in this example should exist"
   default = "westeurope"
@@ -60,5 +64,9 @@ variable "slack_webhook_url" {
 }
 
 variable "slack_channel" {
+
+}
+
+variable "gpu" {
 
 }
